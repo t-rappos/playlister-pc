@@ -20,9 +20,18 @@ import com.google.api.services.plus.model.Activity;
 import com.google.api.services.plus.model.ActivityFeed;
 import com.google.api.services.plus.model.Person;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Collections;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 /**
  * @author Yaniv Inbar
@@ -77,9 +86,73 @@ public class PlusSample {
 
     public static void main(String[] args) {
         try {
+            //https://docs.oracle.com/javase/tutorial/uiswing/misc/systemtray.html
+
+            if(!SystemTray.isSupported()){
+                System.out.println("SystemTray is not supported");
+                return;
+            }
+            final PopupMenu popup = new PopupMenu();
+
+            URL u2 = PlusSample.class.getResource("/bulb.gif");
+            Image image = Toolkit.getDefaultToolkit().getImage(u2);
+
+            final TrayIcon trayIcon = new TrayIcon(image);
+            final SystemTray tray = SystemTray.getSystemTray();
+
+            // Create a pop-up menu components
+            MenuItem aboutItem = new MenuItem("About");
+            MenuItem settings = new MenuItem("Settings");
+
+            MenuItem scan = new MenuItem("Upload Music Data");
+            MenuItem login = new MenuItem("Log In");
+            MenuItem exit = new MenuItem("Exit");
+
+            exit.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    tray.remove(trayIcon);
+                    System.exit(0);
+                }
+            });
+
+            //CheckboxMenuItem cb1 = new CheckboxMenuItem("Log In");
+
+            //Add components to pop-up menu
+            popup.add(aboutItem);
+            popup.add(settings);
+            popup.addSeparator();
+            popup.add(login);
+
+            boolean loggedIn = false;
+            if(loggedIn){
+                popup.add(scan);
+            }
+            popup.addSeparator();
+            popup.add(exit);
+
+            JFrame frame = new JFrame("DialogDemo");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JOptionPane.showMessageDialog(frame,
+                    "Eggs are not supposed to be green.");
+            //newContentPane.setOpaque(true); //content panes must be opaque
+            //frame.setContentPane(newContentPane);
+
+            //Display the window.
+            //frame.pack();
+            //frame.setVisible(true);
+
+            //showMessageDialog()
+            trayIcon.setPopupMenu(popup);
+
+            try {
+                tray.add(trayIcon);
+            } catch (AWTException e) {
+                System.out.println("TrayIcon could not be added.");
+            }
+
             httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             //GenericUrl url = new GenericUrl("http://localhost:8080/profile2");
-            GenericUrl url2 = new GenericUrl("http://localhost:3000/api/me");
+            GenericUrl url2 = new GenericUrl("http://localhost:8080/api/me");
 
             /*
             dataStoreFactory = new FileDataStoreFactory(DATA_STORE_DIR);
@@ -97,7 +170,7 @@ public class PlusSample {
 /*
 
  */
-            BasicAuthentication ba = new BasicAuthentication("jack", "secret");
+            BasicAuthentication ba = new BasicAuthentication("tom", "rap");
 
             HttpRequestFactory requestFactory = httpTransport.createRequestFactory();//credential
             //HttpRequest request = requestFactory.buildGetRequest(url);
