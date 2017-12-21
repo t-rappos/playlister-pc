@@ -13,6 +13,10 @@ public class UserManager {
         prefs.put("password", password);
     }
 
+    public static void saveDeviceId(long deviceId){
+        prefs.putLong("deviceId", deviceId);
+    }
+
     public static String getUsername(){
         String username = prefs.get("username", "");
         return username;
@@ -22,4 +26,15 @@ public class UserManager {
         String password = prefs.get("password", "");
         return password;
     }
+
+    //defaults to -1 if no device id is set.
+    public static long getDeviceId(){
+        return prefs.getLong("deviceId", -1);
+    }
+
+    public static boolean hasDeviceId(){
+        return getDeviceId() != -1;
+    }
+
+
 }

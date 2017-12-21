@@ -54,7 +54,19 @@ public class TrayApp {
             }
         });
 
-        setLoggedOut();
+        scan.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                TrackCollection results = TrackScanner.scan("");
+                messenger.sendTracks(results);
+            }
+        });
+
+        if(messenger.validateConnection()){
+            messenger.loadDeviceId();
+            setLoggedIn();
+        } else {
+            setLoggedOut();
+        }
 
         try {
             tray.add(trayIcon);
