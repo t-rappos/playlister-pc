@@ -50,7 +50,7 @@ public class TrackScanner {
 
 
 
-    public static TrackCollection scan(String directory){
+    public static TrackCollection scan(){
         //File[] files = new File("E:\\music\\Gabriel_And_Dresden_-_The_Only_Road-(ANJCD058)-WEB-2017-MMS_INT [EDM RG]").listFiles();
         long startTime = System.nanoTime();
         TrackCollection col = new TrackCollection();

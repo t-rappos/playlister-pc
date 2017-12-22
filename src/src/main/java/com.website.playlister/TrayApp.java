@@ -62,7 +62,7 @@ public class TrayApp {
 
         scan.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                TrackCollection results = TrackScanner.scan("");
+                TrackCollection results = TrackScanner.scan();
                 messenger.sendTracks(results);
             }
         });

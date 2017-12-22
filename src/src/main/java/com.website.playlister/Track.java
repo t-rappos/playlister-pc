@@ -24,7 +24,7 @@ public class Track {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             FileInputStream fis = new FileInputStream(f);
-            byte[] dataBytes = new byte[150];
+            byte[] dataBytes = new byte[1000];
             int nread = 0;
 
             int counter = 0;    //only reads the first 150*5 bytes
@@ -41,6 +41,7 @@ public class Track {
             }
             this.hash = sb.toString();
             System.out.println(this.hash);
+            fis.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
