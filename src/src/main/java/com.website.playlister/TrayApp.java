@@ -54,6 +54,12 @@ public class TrayApp {
             }
         });
 
+        settings.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                MusicFolderDialog mfd = new MusicFolderDialog(trap);
+            }
+        });
+
         scan.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 TrackCollection results = TrackScanner.scan("");

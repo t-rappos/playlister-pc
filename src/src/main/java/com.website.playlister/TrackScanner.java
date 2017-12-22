@@ -53,8 +53,11 @@ public class TrackScanner {
     public static TrackCollection scan(String directory){
         //File[] files = new File("E:\\music\\Gabriel_And_Dresden_-_The_Only_Road-(ANJCD058)-WEB-2017-MMS_INT [EDM RG]").listFiles();
         long startTime = System.nanoTime();
-        TrackCollection col = scanRecursive("E:\\music\\Gabriel_And_Dresden_-_The_Only_Road-(ANJCD058)-WEB-2017-MMS_INT [EDM RG]");
-
+        TrackCollection col = new TrackCollection();
+        ArrayList<File> musicFolders = UserManager.getMusicFolders();
+        for(File f : musicFolders){
+            col.addTrackCollection(scanRecursive(f.getAbsolutePath()));
+        }
         long dt = System.nanoTime() - startTime;
         System.out.println("Completed in " + (float)dt/1000000f + " ms");
         col.deviceId = UserManager.getDeviceId();
