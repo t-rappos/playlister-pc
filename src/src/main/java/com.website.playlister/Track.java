@@ -2,9 +2,15 @@ package com.website.playlister;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.Map;
+
+import org.tritonus.share.sampled.file.TAudioFileFormat;
+
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  * Created by Thomas Rappos (6336361) on 12/21/2017.
@@ -47,10 +53,36 @@ public class Track {
         }
     }
 
-    public Track(File f){
+    private void getFileProperties(File f){
+        //http://www.javazoom.net/mp3spi/documents.html
+        AudioFileFormat baseFileFormat = null;
+        try {
+            baseFileFormat = AudioSystem.getAudioFileFormat(f);
+            if (baseFileFormat instanceof TAudioFileFormat)
+            {
+                Map properties = ((TAudioFileFormat)baseFileFormat).properties();
+                artist = (String) properties.get("author");
+                if(artist == null || artist.compareTo("")==0){
+                    artist = (String) properties.get("artist");
+                    if(artist == null || artist.compareTo("")==0){
+                        artist = (String) properties.get("albumartist");
+                    }
+                }
+                album = (String) properties.get("album");
+                title = (String) properties.get("title");
+            }
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    Track(File f){
         filename = f.getName();
         path = f.getParent();
         filesize = f.length();
         generateHash(f);
+        getFileProperties(f);
     }
 }
