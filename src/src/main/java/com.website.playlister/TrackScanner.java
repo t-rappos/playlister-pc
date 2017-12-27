@@ -50,7 +50,7 @@ public class TrackScanner {
 
 
 
-    public static TrackCollection scan(){
+    public static TrackStore scan(){
         //File[] files = new File("E:\\music\\Gabriel_And_Dresden_-_The_Only_Road-(ANJCD058)-WEB-2017-MMS_INT [EDM RG]").listFiles();
         long startTime = System.nanoTime();
         TrackCollection col = new TrackCollection();
@@ -60,7 +60,11 @@ public class TrackScanner {
         }
         long dt = System.nanoTime() - startTime;
         System.out.println("Completed in " + (float)dt/1000000f + " ms");
-        col.deviceId = UserManager.getDeviceId();
-        return col;
+        //col.deviceId = UserManager.getDeviceId();
+
+        TrackStore trackStore = new TrackStore( UserManager.getDeviceId());
+        trackStore.checkInTracks(col);
+
+        return trackStore;
     }
 }

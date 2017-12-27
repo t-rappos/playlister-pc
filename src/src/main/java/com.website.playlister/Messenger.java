@@ -20,8 +20,13 @@ public class Messenger {
         return valid;
     }
 
-    public void sendTracks(TrackCollection tracks){
-        sendPOSTRequest("tracks",MyJson.toJson(tracks));
+    public void sendTracks(TrackCollection toAdd, TrackCollection toRemove){
+        if(!toAdd.tracks.isEmpty()){
+            sendPOSTRequest("tracks",MyJson.toJson(toAdd));
+        }
+        if(!toRemove.tracks.isEmpty()) {
+            sendPOSTRequest("removetracks", MyJson.toJson(toRemove));
+        }
         System.out.println("Sent tracks to server");
     }
 
@@ -42,6 +47,7 @@ public class Messenger {
             HttpResponse r = sendGETRequest("device/"+deviceName + "PC");
             if(r != null){
                 try {
+                    TrackStore.invalidateStore();
                     DeviceInfo di = MyJson.toDeviceInfo(r.parseAsString());
                     UserManager.saveDeviceId(di.id);
                     System.out.println("Acquired device id = " + di.id);
