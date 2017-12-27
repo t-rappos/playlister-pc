@@ -49,6 +49,7 @@ public class TrackStore {
         try {
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(("tracks.txt")));
             oos.writeObject(new HashSet<Track>());
+            System.out.println("Invalidating track storage");
         } catch (IOException e) {
             e.printStackTrace();
         }

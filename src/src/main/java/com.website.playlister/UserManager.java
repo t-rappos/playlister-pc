@@ -37,6 +37,14 @@ class UserManager {
         return getDeviceId() != -1;
     }
 
+    static long getServerDBResetId(){
+        return prefs.getLong("dbResetId", 0);
+    }
+
+    static void saveServerDBResetId(long id){
+        prefs.putLong("dbResetId", id);
+    }
+
     static void saveMusicFolders(ArrayList<File> dirs) {
         ArrayList<String> paths = new ArrayList<String>();
         for(File f : dirs){

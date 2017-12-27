@@ -10,17 +10,16 @@ import java.security.GeneralSecurityException;
  * Created by Thomas Rappos (6336361) on 12/18/2017.
  */
 
-public class Messenger {
+class Messenger {
     private static HttpTransport httpTransport;
-    private boolean valid = false;
     private String apiUrl =  "http://localhost:8080/";
 
-    public boolean validateConnection(){
-        valid = sendGETRequest("api/me") != null;
-        return valid;
+    //returns true if user credentials are correct
+    boolean validateConnection(){
+        return sendGETRequest("api/me") != null;
     }
 
-    public void sendTracks(TrackCollection toAdd, TrackCollection toRemove){
+    void sendTracks(TrackCollection toAdd, TrackCollection toRemove){
         if(!toAdd.tracks.isEmpty()){
             sendPOSTRequest("tracks",MyJson.toJson(toAdd));
         }
@@ -30,7 +29,7 @@ public class Messenger {
         System.out.println("Sent tracks to server");
     }
 
-    public Messenger(){
+    Messenger(){
         try {
             httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         } catch (GeneralSecurityException e) {
@@ -40,27 +39,47 @@ public class Messenger {
         }
     }
 
+    boolean checkIfServerDBHasReset(){
+        boolean serverHasReset = true;
+        HttpResponse r = sendGETRequest("status/");
+        if(r!=null) {
+            try {
+                ServerStatus s = (ServerStatus)MyJson.toObject(r.parseAsString(), ServerStatus.class);
+                long lastResetId = UserManager.getServerDBResetId();
+                if(s.dbResetId == lastResetId){
+                    System.out.println("Server has not reset since last run");
+                    serverHasReset = false;
+                } else {
+                    System.out.println("Server has reset since last run");
+                    UserManager.saveServerDBResetId(s.dbResetId);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return serverHasReset;
+    }
 
-    public void loadDeviceId(){
-        //if(!UserManager.hasDeviceId()){   //TODO: enabled this, also check if server hasnt been reset since last id was gathered
+    void loadDeviceId(){
+        if(!UserManager.hasDeviceId() || checkIfServerDBHasReset()){   //TODO: enabled this, also check if server hasnt been reset since last id was gathered
             String deviceName = "tomsJavaPcApp/";
             HttpResponse r = sendGETRequest("device/"+deviceName + "PC");
             if(r != null){
                 try {
                     TrackStore.invalidateStore();
-                    DeviceInfo di = MyJson.toDeviceInfo(r.parseAsString());
+                    DeviceInfo di = (DeviceInfo)MyJson.toObject(r.parseAsString(), DeviceInfo.class);
                     UserManager.saveDeviceId(di.id);
                     System.out.println("Acquired device id = " + di.id);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        //} else {
-        //    System.out.println("Loaded device id = " + UserManager.getDeviceId());
-        //}
+        } else {
+            System.out.println("Using last device id " + UserManager.getDeviceId());
+        }
     }
 
-    HttpResponse sendPOSTRequest(String endpoint, String body){
+    private HttpResponse sendPOSTRequest(String endpoint, String body){
         GenericUrl url2 = new GenericUrl(apiUrl + endpoint);
         BasicAuthentication ba = new BasicAuthentication(UserManager.getUsername(), UserManager.getPassword());
         try{
@@ -75,7 +94,7 @@ public class Messenger {
         }
     }
 
-    HttpResponse sendGETRequest(String endpoint){
+    private HttpResponse sendGETRequest(String endpoint){
         GenericUrl url2 = new GenericUrl(apiUrl + endpoint);
         BasicAuthentication ba = new BasicAuthentication(UserManager.getUsername(), UserManager.getPassword());
         try{

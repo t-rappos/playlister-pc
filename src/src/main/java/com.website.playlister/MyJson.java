@@ -12,18 +12,20 @@ import java.util.ArrayList;
 
 
 
-public class MyJson {
-    public static String toJson(Object o){
+class MyJson {
+    static String toJson(Object o){
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         return gson.toJson(o);
     }
-    public static DeviceInfo toDeviceInfo(String s){
+
+    static Object toObject(String s, Class c){
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-        return gson.fromJson(s, DeviceInfo.class);
+        return gson.fromJson(s, c);
     }
-    public static ArrayList<String> toStringList(String s){
+
+    static ArrayList<String> toStringList(String s){
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         ArrayList<String> temp = new ArrayList<String>();
