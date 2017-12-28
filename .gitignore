@@ -10,6 +10,30 @@ buildNumber.properties
 client_secrets.json
 src/.idea/
 tracks.txt
+build/
+out/
+.gradle
+.class
+bin/
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+.idea/datasources.xml
+.idea/dataSources.ids
+
+# Android Studio
+*.iml
+.gradle
+.navigation
+captures/
+output.json 
+/local.properties
+/.idea/libraries
+.DS_Store
+.externalNativeBuild
+
+#NDK
+obj/
+.externalNativeBuild
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
