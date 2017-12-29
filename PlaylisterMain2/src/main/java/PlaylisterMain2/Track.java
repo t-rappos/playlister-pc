@@ -22,30 +22,12 @@ public class Track implements java.io.Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Track track = (Track) o;
-
-        if (filesize != track.filesize) return false;
-        if (!filename.equals(track.filename)) return false;
-        if (!path.equals(track.path)) return false;
-        if (title != null ? !title.equals(track.title) : track.title != null) return false;
-        if (artist != null ? !artist.equals(track.artist) : track.artist != null) return false;
-        if (album != null ? !album.equals(track.album) : track.album != null) return false;
-        return hash.equals(track.hash);
+        return this.hash.compareTo(((Track)o).hash)==0;
     }
 
     @Override
     public int hashCode() {
-        int result = filename.hashCode();
-        result = 31 * result + path.hashCode();
-        result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (artist != null ? artist.hashCode() : 0);
-        result = 31 * result + (album != null ? album.hashCode() : 0);
-        result = 31 * result + (int) (filesize ^ (filesize >>> 32));
-        result = 31 * result + hash.hashCode();
-        return result;
+        return hash.hashCode();
     }
 
     //TODO: optimise this

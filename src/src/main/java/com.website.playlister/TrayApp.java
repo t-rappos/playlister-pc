@@ -1,5 +1,7 @@
 package com.website.playlister;
 
+import PlaylisterMain2.Messenger;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,12 +25,13 @@ public class TrayApp {
     private MenuItem login = new MenuItem("Log In");
     private MenuItem logout = new MenuItem("Log Out");
     private MenuItem exit = new MenuItem("Exit");
+    UserManager userManager = new UserManager();
 
-    final Messenger messenger = new Messenger();
+    final Messenger messenger = new Messenger(userManager, "http://localhost:8080/"); //TODO: make this string a constant
 
     public TrayApp(){
         //https://docs.oracle.com/javase/tutorial/uiswing/misc/systemtray.html
-        System.out.println("using details stored for " + UserManager.getUsername());
+        System.out.println("using details stored for " + userManager.getUsername());
 
         if(!SystemTray.isSupported()){
             System.out.println("SystemTray is not supported");
@@ -63,7 +66,7 @@ public class TrayApp {
         scan.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Thread t = new Thread(() -> {
-                    TrackStore results = TrackScanner.scan(scan);
+                    TrackStore results = TrackScanner.scan(scan, userManager);
                     messenger.sendTracks(results.toAdd, results.toRemove);
                     scan.setLabel("Finished Scanning");
                     try {
@@ -79,7 +82,8 @@ public class TrayApp {
         });
 
         if(messenger.validateConnection()){
-            messenger.loadDeviceId();
+            TrackStore store = new TrackStore(); //TODO: make invalidateStore(), a static function?
+            messenger.loadDeviceId(store);
             setLoggedIn();
         } else {
             setLoggedOut();

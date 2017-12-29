@@ -23,10 +23,11 @@ public class MusicFolderDialog extends JPanel
     private int selectedListIndex = 0;
     private JFileChooser fileChooser = new JFileChooser();
     private ArrayList<File> musicFolders = new ArrayList<File>();
+    UserManager userManager = new UserManager();
 
     private void loadMusicFolders(){
         try{
-            musicFolders = UserManager.getMusicFolders();
+            musicFolders = userManager.getMusicFolders();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -50,7 +51,7 @@ public class MusicFolderDialog extends JPanel
         musicFolders.add(dir);
         listModel.addElement(dir.getAbsolutePath());
         System.out.println("adding folder: " + dir.getName());
-        UserManager.saveMusicFolders(musicFolders);
+        userManager.saveMusicFolders(musicFolders);
     }
 
     private void removeMusicFolder(File dir){
@@ -61,7 +62,7 @@ public class MusicFolderDialog extends JPanel
         musicFolders.remove(dir);
         listModel.removeElement(dir.getAbsolutePath());
         System.out.println("removing folder: " + dir.getName());
-        UserManager.saveMusicFolders(musicFolders);
+        userManager.saveMusicFolders(musicFolders);
     }
 //https://docs.oracle.com/javase/tutorial/uiswing/examples/components/ListDemoProject/src/components/ListDemo.java
     public MusicFolderDialog(final TrayApp tray){

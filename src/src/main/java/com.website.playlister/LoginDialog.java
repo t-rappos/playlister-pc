@@ -4,6 +4,8 @@ package com.website.playlister;
  * Created by Thomas Rappos (6336361) on 12/18/2017.
  */
 
+import PlaylisterMain2.Messenger;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -28,7 +30,8 @@ public class LoginDialog {
         loginB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String password = new String(passFrame.getPassword());
-                UserManager.saveCredentials(userFrame.getText(),password );
+                UserManager userManager = new UserManager();
+                userManager.saveCredentials(userFrame.getText(),password );
 
                 boolean valid = messenger.validateConnection();
                 if(valid){

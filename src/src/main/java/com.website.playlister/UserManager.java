@@ -4,48 +4,58 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
+import PlaylisterMain2.IUserManager;
+import PlaylisterMain2.MyJson;
 
 /**
  * Created by Thomas Rappos (6336361) on 12/18/2017.
  */
-class UserManager {
+class UserManager implements IUserManager {
     private static Preferences prefs = Preferences.userNodeForPackage(UserManager.class);
 
-    static void saveCredentials(String username, String password){
+    public void saveCredentials(String username, String password){
         prefs.put("username", username);
         prefs.put("password", password);
     }
 
-    static void saveDeviceId(long deviceId){
-        prefs.putLong("deviceId", deviceId);
+    public void saveDeviceId(int deviceId){
+        prefs.putInt("deviceId", deviceId);
     }
 
-    static String getUsername(){
+    public String getUsername(){
         return prefs.get("username", "");
     }
 
-    static String getPassword(){
+    public String getPassword(){
         return prefs.get("password", "");
     }
 
-    //defaults to -1 if no device id is set.
-    static long getDeviceId(){
-        return prefs.getLong("deviceId", -1);
+    public String getEmail(){
+        return prefs.get("email", "");
     }
 
-    static boolean hasDeviceId(){
+    public void saveEmail(String email){
+        prefs.put("email", email);
+    }
+
+    //defaults to -1 if no device id is set.
+    public int getDeviceId(){
+        return prefs.getInt("deviceId", -1);
+    }
+
+    public boolean hasDeviceId(){
         return getDeviceId() != -1;
     }
 
-    static long getServerDBResetId(){
+    public long getServerDBResetId(){
         return prefs.getLong("dbResetId", 0);
     }
 
-    static void saveServerDBResetId(long id){
+    public void saveServerDBResetId(long id){
         prefs.putLong("dbResetId", id);
     }
 
-    static void saveMusicFolders(ArrayList<File> dirs) {
+    public void saveMusicFolders(ArrayList<File> dirs) {
         ArrayList<String> paths = new ArrayList<String>();
         for(File f : dirs){
             paths.add(f.getAbsolutePath());
@@ -55,7 +65,7 @@ class UserManager {
         System.out.println("saving music folders :" + jsonFolders);
     }
 
-    static ArrayList<File> getMusicFolders(){
+    public ArrayList<File> getMusicFolders(){
         ArrayList<File> result = new ArrayList<File>();
         String jsonFolders = prefs.get("folders","");
         System.out.println("loading music folders :" + jsonFolders);

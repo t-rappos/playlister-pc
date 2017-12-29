@@ -89,11 +89,11 @@ public class TrackScanner {
         return res;
     }
 
-    public static TrackStore scan(MenuItem scan){
+    public static TrackStore scan(MenuItem scan, UserManager userManager){
         //File[] files = new File("E:\\music\\Gabriel_And_Dresden_-_The_Only_Road-(ANJCD058)-WEB-2017-MMS_INT [EDM RG]").listFiles();
         long startTime = System.nanoTime();
         TrackCollection col = new TrackCollection();
-        ArrayList<File> musicFolders = UserManager.getMusicFolders();
+        ArrayList<File> musicFolders = userManager.getMusicFolders();
 
         folderCount = 0;
         maxFolderCount = countFolders(musicFolders);
@@ -105,8 +105,8 @@ public class TrackScanner {
         System.out.println("Completed in " + (float)dt/1000000f + " ms");
 
         scan.setLabel("Scanning: verifying scanned tracks");
-        TrackStore trackStore = new TrackStore( UserManager.getDeviceId());
-        trackStore.checkInTracks(col);
+        TrackStore trackStore = new TrackStore();
+        trackStore.checkInTracks(col,userManager);
 
         scan.setLabel("Scanning: sending to server");
         return trackStore;
