@@ -1,10 +1,12 @@
 package com.website.playlister;
 
+import PlaylisterMain2.TrackCollection;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.*;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 
 /**
  * Created by Thomas Rappos (6336361) on 12/18/2017.
@@ -19,14 +21,22 @@ class Messenger {
         return sendGETRequest("api/me") != null;
     }
 
+    private void sendTracksPartitioned(TrackCollection col, String endpoint ){
+        if(!col.tracks.isEmpty()){
+            ArrayList<TrackCollection> cols = col.split(100);
+            for(TrackCollection c : cols){
+                if(!c.tracks.isEmpty()){
+                    sendPOSTRequest(endpoint, MyJson.toJson(c));
+                    System.out.println("Sent tracks to server: " + endpoint);
+                }
+            }
+        }
+    }
+
     void sendTracks(TrackCollection toAdd, TrackCollection toRemove){
-        if(!toAdd.tracks.isEmpty()){
-            sendPOSTRequest("tracks",MyJson.toJson(toAdd));
-        }
-        if(!toRemove.tracks.isEmpty()) {
-            sendPOSTRequest("removetracks", MyJson.toJson(toRemove));
-        }
-        System.out.println("Sent tracks to server");
+        sendTracksPartitioned(toAdd, "tracks");
+        sendTracksPartitioned(toRemove, "removetracks");
+        System.out.println("Finished sending tracks to server");
     }
 
     Messenger(){

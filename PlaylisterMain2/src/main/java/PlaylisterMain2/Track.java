@@ -1,23 +1,16 @@
-package com.website.playlister;
+package PlaylisterMain2;
+
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.Serializable;
 import java.security.MessageDigest;
-import java.util.Map;
-
-import org.tritonus.share.sampled.file.TAudioFileFormat;
-
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
- * Created by Thomas Rappos (6336361) on 12/21/2017.
+ * Created by Thomas Rappos (6336361) on 12/29/2017.
  */
-/*
-public class Track implements java.io.Serializable{
+
+public class Track implements java.io.Serializable {
+
     public String filename = "";
     public String path = "";
     public String title = "";
@@ -25,6 +18,7 @@ public class Track implements java.io.Serializable{
     public String album = "";
     public long filesize = 0;
     public String hash = "";
+    //transient private IFilePropertyReader filePropertyReader;
 
     @Override
     public boolean equals(Object o) {
@@ -55,6 +49,8 @@ public class Track implements java.io.Serializable{
     }
 
     //TODO: optimise this
+    //TODO: can we use the hashcode above?
+
     //https://www.mkyong.com/java/how-to-generate-a-file-checksum-value-in-java/
     private void generateHash(File f){
         try {
@@ -83,37 +79,18 @@ public class Track implements java.io.Serializable{
         }
     }
 
-    private void getFileProperties(File f){
-        //http://www.javazoom.net/mp3spi/documents.html
-        AudioFileFormat baseFileFormat = null;
-        try {
-            baseFileFormat = AudioSystem.getAudioFileFormat(f);
-            if (baseFileFormat instanceof TAudioFileFormat)
-            {
-                Map properties = ((TAudioFileFormat)baseFileFormat).properties();
-                artist = (String) properties.get("author");
-                if(artist == null || artist.compareTo("")==0){
-                    artist = (String) properties.get("artist");
-                    if(artist == null || artist.compareTo("")==0){
-                        artist = (String) properties.get("albumartist");
-                    }
-                }
-                album = (String) properties.get("album");
-                title = (String) properties.get("title");
-            }
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void getFileProperties(File f, IFilePropertyReader reader){
+        reader.readFileProperties(f);
+        title = reader.getTitle();
+        album = reader.getAlbum();
+        artist = reader.getArtist();
     }
 
-    Track(File f){
+    public Track(File f, IFilePropertyReader reader){
         filename = f.getName();
         path = f.getParent();
         filesize = f.length();
         generateHash(f);
-        getFileProperties(f);
+        getFileProperties(f, reader);
     }
 }
-*/

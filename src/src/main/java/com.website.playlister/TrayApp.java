@@ -19,7 +19,7 @@ public class TrayApp {
     private MenuItem aboutItem = new MenuItem("About");
     private MenuItem settings = new MenuItem("Settings");
 
-    private MenuItem scan = new MenuItem("Upload Music Data");
+    private MenuItem scan = new MenuItem("Scan and Upload");
     private MenuItem login = new MenuItem("Log In");
     private MenuItem logout = new MenuItem("Log Out");
     private MenuItem exit = new MenuItem("Exit");
@@ -62,8 +62,19 @@ public class TrayApp {
 
         scan.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                TrackStore results = TrackScanner.scan();
-                messenger.sendTracks(results.toAdd, results.toRemove);
+                Thread t = new Thread(() -> {
+                    TrackStore results = TrackScanner.scan(scan);
+                    messenger.sendTracks(results.toAdd, results.toRemove);
+                    scan.setLabel("Finished Scanning");
+                    try {
+                        Thread.sleep(10000);
+                        scan.setLabel("Scan and Upload");
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+
+                });
+                t.start();
             }
         });
 
