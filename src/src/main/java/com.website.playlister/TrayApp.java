@@ -40,6 +40,11 @@ public class TrayApp {
 
         final TrayApp trap = this;
 
+        logout.addActionListener((ActionEvent e)->{
+            userManager.saveCredentials("","");
+            setLoggedOut();
+        });
+
         login.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 LoginDialog ld = new LoginDialog(messenger,trap);

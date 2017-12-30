@@ -78,17 +78,6 @@ public class TrackScanner {
     }
 
 
-    private static int countFolders(ArrayList<File> files){
-        long startTime = System.nanoTime();
-        int res = 0;
-        for(File f : files){
-            res += FolderScanner.countFolders(f);
-        }
-        long dt = System.nanoTime() - startTime;
-        System.out.println(res + " folders, completed in " + (float)dt/1000000f + " ms");
-        return res;
-    }
-
     public static TrackStore scan(MenuItem scan, UserManager userManager){
         //File[] files = new File("E:\\music\\Gabriel_And_Dresden_-_The_Only_Road-(ANJCD058)-WEB-2017-MMS_INT [EDM RG]").listFiles();
         long startTime = System.nanoTime();
@@ -96,7 +85,7 @@ public class TrackScanner {
         ArrayList<File> musicFolders = userManager.getMusicFolders();
 
         folderCount = 0;
-        maxFolderCount = countFolders(musicFolders);
+        maxFolderCount = FolderScanner.countFolders(musicFolders);
 
         for(File f : musicFolders){
             col.addTrackCollection(scanRecursive(f.getAbsolutePath(), scan));
