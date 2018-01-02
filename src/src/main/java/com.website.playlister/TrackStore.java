@@ -13,8 +13,8 @@ import java.util.HashSet;
 
 
 public class TrackStore extends PlaylisterMain2.ATrackStore{
-    TrackCollection toAdd = new TrackCollection();
-    TrackCollection toRemove = new TrackCollection();
+    //TrackCollection toAdd = new TrackCollection();
+    //TrackCollection toRemove = new TrackCollection();
 
     @Override
     public HashSet<Track> loadStore(){

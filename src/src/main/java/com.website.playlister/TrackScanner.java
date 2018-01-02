@@ -61,13 +61,16 @@ public class TrackScanner {
         TrackCollection col = new TrackCollection();
         FilePropertyReader propReader = new FilePropertyReader(); //TODO: should this be moved higher scope?
         if (files != null && files.length > 0){
+            folderCount++;
             for (File f:files) {
                 if(isFileValid(f)){
-                    //System.out.println(f.getName());
+                    if(f.getName().compareTo("Crookers - Magic Bus(1).mp3")==0){
+                        int bp = 0;
+                    }
+                    System.out.println(f.getName());
                     Track t = new Track(f,propReader);
                     col.addTrack(t);
                 } else if(f.isDirectory()){
-                    folderCount++;
                     scan.setLabel("Scanning " + folderCount + " / " + maxFolderCount);
                     System.out.println(folderCount + " / " + maxFolderCount);
                     col.addTrackCollection(scanRecursive(f.getAbsolutePath(), scan));
@@ -96,7 +99,7 @@ public class TrackScanner {
         scan.setLabel("Scanning: verifying scanned tracks");
         TrackStore trackStore = new TrackStore();
         trackStore.checkInTracks(col,userManager);
-
+        System.out.println(trackStore.toAdd.tracks.size() + " tracks to be added");
         scan.setLabel("Scanning: sending to server");
         return trackStore;
     }

@@ -20,10 +20,12 @@ public class Messenger {
     }
 
     private void sendTracksPartitioned(TrackCollection col, String endpoint ){
+        System.out.println("sending in total " + col.tracks.size() + " tracks to " + endpoint);
         if(!col.tracks.isEmpty()){
-            ArrayList<TrackCollection> cols = col.split(100);
+            ArrayList<TrackCollection> cols = col.split(500);
             for(TrackCollection c : cols){
                 if(!c.tracks.isEmpty()){
+                    System.out.println("sending " + c.tracks.size() + " tracks to " + endpoint);
                     sendPOSTRequest(endpoint, MyJson.toJson(c));
                     System.out.println("Sent tracks to server: " + endpoint);
                 }
@@ -45,6 +47,7 @@ public class Messenger {
 
     private boolean checkIfServerDBHasReset(){
         boolean serverHasReset = true;
+        System.out.println("checkIfServerDBHasReset");
         HttpResponse r = sendGETRequest("status/");
         if(r!=null) {
             try {
@@ -70,6 +73,7 @@ public class Messenger {
             HttpResponse r = sendGETRequest("device/"+deviceName + "PC");
             if(r != null){
                 try {
+                    System.out.println("loadDeviceId: invalidateStore");
                     trackStore.invalidateStore();
                     DeviceInfo di = (DeviceInfo)MyJson.toObject(r.parseAsString(), DeviceInfo.class);
                     userManager.saveDeviceId((int)di.id);
@@ -83,17 +87,22 @@ public class Messenger {
         }
     }
 
-    private void sendPOSTRequest(String endpoint, String body){
+    private HttpResponse sendPOSTRequest(String endpoint, String body){
         GenericUrl url2 = new GenericUrl(apiUrl + endpoint);
         BasicAuthentication ba = new BasicAuthentication(userManager.getUsername(), userManager.getPassword());
         try{
+            System.out.println("sending post to " + url2.getRawPath());
             HttpRequestFactory requestFactory = httpTransport.createRequestFactory();//credential
             HttpRequest request = requestFactory.buildPostRequest(url2, ByteArrayContent.fromString("application/json", body));
             request.getHeaders().setContentType("application/json");
             ba.initialize(request);
+            HttpResponse r =  request.execute();
+            System.out.println("done sending post to " + url2.getRawPath());
+            return r;
         } catch(Exception e){
             System.err.println(e.getMessage());
         }
+        return null;
     }
 
     private HttpResponse sendGETRequest(String endpoint){

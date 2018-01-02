@@ -36,7 +36,7 @@ public class FilePropertyReader implements  IFilePropertyReader{
             baseFileFormat = AudioSystem.getAudioFileFormat(f);
             if (baseFileFormat instanceof TAudioFileFormat)
             {
-                Map properties = ((TAudioFileFormat)baseFileFormat).properties();
+                Map properties = baseFileFormat.properties();
                 artist = (String) properties.get("author");
                 if(artist == null || artist.compareTo("")==0){
                     artist = (String) properties.get("artist");
@@ -50,6 +50,8 @@ public class FilePropertyReader implements  IFilePropertyReader{
         } catch (UnsupportedAudioFileException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e){
             e.printStackTrace();
         }
     }

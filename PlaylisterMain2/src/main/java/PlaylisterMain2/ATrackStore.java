@@ -7,6 +7,7 @@ import java.util.HashSet;
 /**
  * Created by Thomas Rappos (6336361) on 12/29/2017.
  */
+
 public abstract class ATrackStore {
     public TrackCollection toAdd = new TrackCollection();
     public TrackCollection toRemove = new TrackCollection();
@@ -54,7 +55,7 @@ public abstract class ATrackStore {
             }
         }
 
-        System.out.println("Found " + toAdd.tracks.size() + " new untracked tracks that need to be added to server");
+        System.out.println("XFound " + toAdd.tracks.size() + " new untracked tracks that need to be added to server");
         System.out.println("Couldn't find " + toRemove.tracks.size() + " existing tracks from last scan, these will have to be removed from the server");
 
         setDeviceId(userManager.getDeviceId());
