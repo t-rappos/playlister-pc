@@ -11,6 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="PlaylisterMain2" level="project" />
     <orderEntry type="library" name="Maven: com.google.apis:google-api-services-plus:v1-rev530-1.23.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.api-client:google-api-client:1.23.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.oauth-client:google-oauth-client:1.23.0" level="project" />
@@ -34,6 +35,6 @@
     <orderEntry type="library" name="Maven: com.googlecode.soundlibs:jlayer:1.0.1.4" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:3.8.2" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.soundlibs:tritonus-share:0.3.7.4" level="project" />
-    <orderEntry type="library" name="PlaylisterMain2" level="project" />
+    <orderEntry type="library" name="Maven: com.mpatric:mp3agic:0.9.1" level="project" />
   </component>
 </module>

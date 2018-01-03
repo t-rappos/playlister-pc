@@ -2,48 +2,76 @@ package com.website.playlister;
 
 import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.concurrent.*;
 
+import PlaylisterMain2.*;
 import org.apache.commons.io.*;
-import PlaylisterMain2.FolderScanner;
-import PlaylisterMain2.Track;
-import PlaylisterMain2.TrackCollection;
 
 
 /**
  * Created by Thomas Rappos (6336361) on 12/21/2017.
  */
 
-/*
-class TrackCollection{
-    public long deviceId;
-    public ArrayList<Track> tracks = new ArrayList<Track>();
 
-    public void addTrack(Track t){
-        tracks.add(t);
-    }
-    public void addTrackCollection(TrackCollection tc){
-        tracks.addAll(tc.tracks);
-    }
+class ScanRetryTask implements Runnable{
+    private int index = 0;
+    private IRetryTaskContext<Track> parent;
+    private ArrayList<File> files;
 
-    public ArrayList<TrackCollection> split(int maxArraySize){
-        ArrayList<TrackCollection> result = new ArrayList<TrackCollection>();
-        int arrayCount = tracks.size() / maxArraySize;
-        //int leftover = tracks.size() - arrayCount * maxArraySize;
-        for(int i = 0; i < arrayCount; i++){
-            TrackCollection col = new TrackCollection();
-            col.deviceId = deviceId;
-            col.tracks.addAll(tracks.subList(maxArraySize*i,maxArraySize*(i+1)));
-            result.add(col);
+    ScanRetryTask(int i, IRetryTaskContext<Track> p, ArrayList<File> f){
+        System.out.println("Starting task @ " + i);
+        index = i;
+        parent = p;
+        files = f;
+    }
+    @Override
+    public void run() {
+        FilePropertyReader fpr = new FilePropertyReader();
+        for(int i = index; i < files.size(); i++){
+            File f = files.get(i);
+            if(TrackScanner.isFileValid(f)){
+                if(f.getName().compareTo("Crookers - Magic Bus(1).mp3")==0){
+                    int bp = 0;
+                }
+                System.out.println(f.getName());
+                Track t = new Track(f,fpr);
+                parent._addDataAndProgress(t);
+            }
         }
-        TrackCollection col = new TrackCollection();
-        col.tracks.addAll(tracks.subList(maxArraySize*arrayCount,tracks.size()));
-        col.deviceId = deviceId;
-        result.add(col);
-        return result;
+        parent._setComplete();
+        files.clear();
     }
-};
-*/
+
+}
+
+class ScanRetryTaskContext extends IRetryTaskContext<Track> {
+    private ArrayList<File> files;
+    private Messenger messenger;
+
+    ScanRetryTaskContext(ArrayList<File> pFiles, Messenger m){
+        files = pFiles;
+        messenger = m;
+    }
+
+    @Override
+    public Runnable _getNewTask(int progressIndex) {
+        return new ScanRetryTask(progressIndex, this, files);
+    }
+
+    @Override
+    public void _onCompletion() {
+        System.out.println("ScanRetryTaskContext: FInished Scanning");
+        TrackStore trackStore = new TrackStore();
+        TrackCollection col = new TrackCollection();
+        col.tracks.addAll(this.getResults());
+        trackStore.checkInTracks(col,new UserManager());
+        System.out.println(trackStore.toAdd.tracks.size() + " tracks to be added");
+        messenger.sendTracks(trackStore.toAdd, trackStore.toRemove);
+        files.clear();
+        col.tracks.clear();
+    }
+}
 
 public class TrackScanner {
 
@@ -54,53 +82,40 @@ public class TrackScanner {
         return isFile && isMp3;
     }
 
-    static int folderCount = 0;
-    static int maxFolderCount = 0;
-    static TrackCollection scanRecursive(String d, MenuItem scan){
-        File[] files = new File(d).listFiles();
-        TrackCollection col = new TrackCollection();
-        FilePropertyReader propReader = new FilePropertyReader(); //TODO: should this be moved higher scope?
-        if (files != null && files.length > 0){
-            folderCount++;
+    public static ArrayList<File> getFiles(File pf){
+        ArrayList<File> res = new ArrayList<File>();
+        File[] files = pf.listFiles();
+        if (files != null && files.length > 0) {
             for (File f:files) {
-                if(isFileValid(f)){
-                    if(f.getName().compareTo("Crookers - Magic Bus(1).mp3")==0){
-                        int bp = 0;
+                if(f.isDirectory()){
+                    res.addAll(getFiles(f));
+                } else {
+                    if(isFileValid(f)){
+                        res.add(f);
                     }
-                    System.out.println(f.getName());
-                    Track t = new Track(f,propReader);
-                    col.addTrack(t);
-                } else if(f.isDirectory()){
-                    scan.setLabel("Scanning " + folderCount + " / " + maxFolderCount);
-                    System.out.println(folderCount + " / " + maxFolderCount);
-                    col.addTrackCollection(scanRecursive(f.getAbsolutePath(), scan));
                 }
             }
         }
-        return col;
+        return res;
     }
 
-
-    public static TrackStore scan(MenuItem scan, UserManager userManager){
-        //File[] files = new File("E:\\music\\Gabriel_And_Dresden_-_The_Only_Road-(ANJCD058)-WEB-2017-MMS_INT [EDM RG]").listFiles();
+    public static void scan(MenuItem scan, UserManager userManager, Messenger m){
         long startTime = System.nanoTime();
-        TrackCollection col = new TrackCollection();
         ArrayList<File> musicFolders = userManager.getMusicFolders();
 
-        folderCount = 0;
-        maxFolderCount = FolderScanner.countFolders(musicFolders);
-
+        ArrayList<File> files = new ArrayList<>();
         for(File f : musicFolders){
-            col.addTrackCollection(scanRecursive(f.getAbsolutePath(), scan));
+            files.addAll(getFiles(f));
         }
+
+        ScanRetryTaskContext task = new ScanRetryTaskContext(files, m);
+        task.Run();
+
+        files.clear();
         long dt = System.nanoTime() - startTime;
         System.out.println("Completed in " + (float)dt/1000000f + " ms");
 
         scan.setLabel("Scanning: verifying scanned tracks");
-        TrackStore trackStore = new TrackStore();
-        trackStore.checkInTracks(col,userManager);
-        System.out.println(trackStore.toAdd.tracks.size() + " tracks to be added");
         scan.setLabel("Scanning: sending to server");
-        return trackStore;
     }
 }

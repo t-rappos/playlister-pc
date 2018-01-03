@@ -47,6 +47,7 @@ public class FilePropertyReader implements  IFilePropertyReader{
                 album = (String) properties.get("album");
                 title = (String) properties.get("title");
             }
+
         } catch (UnsupportedAudioFileException e) {
             e.printStackTrace();
         } catch (IOException e) {

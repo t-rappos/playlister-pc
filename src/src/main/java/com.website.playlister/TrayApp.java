@@ -71,8 +71,8 @@ public class TrayApp {
         scan.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Thread t = new Thread(() -> {
-                    TrackStore results = TrackScanner.scan(scan, userManager);
-                    messenger.sendTracks(results.toAdd, results.toRemove);
+                    TrackScanner.scan(scan, userManager, messenger);    //TODO: scanning shouldnt have anything to do with sending...
+                    //messenger.sendTracks(results.toAdd, results.toRemove);
                     scan.setLabel("Finished Scanning");
                     try {
                         Thread.sleep(10000);
