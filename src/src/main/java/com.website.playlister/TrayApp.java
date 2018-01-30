@@ -1,11 +1,15 @@
 package com.website.playlister;
 
 import PlaylisterMain2.Messenger;
+import PlaylisterMain2.Playlist;
+
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.ArrayList;
+
 
 /**
  * Created by Thomas Rappos (6336361) on 12/18/2017.
@@ -26,11 +30,6 @@ public class TrayApp {
     private MenuItem logout = new MenuItem("Log Out");
     private MenuItem exit = new MenuItem("Exit");
     UserManager userManager = new UserManager();
-
-    //http://localhost:8080/
-    private static final String REMOTE_SERVER = "https://thawing-atoll-11089.herokuapp.com/";
-    private static final String LOCAL_SERVER = "http://localhost:8080/";
-
     final Messenger messenger = new Messenger(userManager);
 
     public TrayApp(){
@@ -90,10 +89,22 @@ public class TrayApp {
             }
         });
 
-        if(messenger.validateConnection(LOCAL_SERVER) || messenger.validateConnection(REMOTE_SERVER)){
+        if(messenger.validateConnection(Config.getLocalServerURL())
+                || messenger.validateConnection(Config.getRemoteServerURL()))
+        {
             TrackStore store = new TrackStore(); //TODO: make invalidateStore(), a static function?
             messenger.loadDeviceId(store);
-            messenger.loadPlaylists();
+            ArrayList<Playlist> pa = messenger.loadPlaylists();
+            ArrayList<String> playlists = new ArrayList<>();
+            ArrayList<String> names = new ArrayList<>();
+            ArrayList<Integer> ids = new ArrayList<>();
+            for(Playlist p : pa){
+                if(p.name != null){
+                    names.add(p.name);
+                    ids.add((int)(long)p.id);
+                }
+            }
+            PlaylistListDialog.CreateAndShowGui(names, ids);
             setLoggedIn();
         } else {
             setLoggedOut();

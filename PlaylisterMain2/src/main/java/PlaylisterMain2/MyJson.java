@@ -2,6 +2,9 @@ package PlaylisterMain2;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -26,5 +29,12 @@ public class MyJson {
         Gson gson = gsonBuilder.create();
         ArrayList<String> temp = new ArrayList<String>();
         return gson.fromJson(s, temp.getClass());
+    }
+
+    //https://stackoverflow.com/questions/9598707/gson-throwing-expected-begin-object-but-was-begin-array
+    public static ArrayList<Playlist> toPlaylistArray(String s){
+        Type collectionType = new TypeToken<ArrayList<Playlist>>(){}.getType();
+        return new Gson()
+                .fromJson( s , collectionType);
     }
 }

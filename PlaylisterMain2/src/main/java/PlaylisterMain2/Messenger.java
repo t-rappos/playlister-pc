@@ -1,6 +1,7 @@
 package PlaylisterMain2;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.*;
@@ -69,15 +70,16 @@ public class Messenger {
         return serverHasReset;
     }
 
-    public void loadPlaylists(){
+    public ArrayList<Playlist> loadPlaylists(){
         HttpResponse r = sendGETRequest("mplaylists/");
         if(r != null) {
             try {
-                System.out.println(r.parseAsString());
+                return MyJson.toPlaylistArray(r.parseAsString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return null;
     }
 
     public void loadDeviceId(ATrackStore trackStore){

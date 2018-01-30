@@ -5,7 +5,6 @@ package com.website.playlister;
  */
 
 import PlaylisterMain2.Messenger;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -33,7 +32,8 @@ public class LoginDialog {
                 UserManager userManager = new UserManager();
                 userManager.saveCredentials(userFrame.getText(),password );
 
-                boolean valid = messenger.validateConnection();
+                boolean valid = messenger.validateConnection(Config.getLocalServerURL())
+                        || messenger.validateConnection(Config.getRemoteServerURL());
                 if(valid){
                     frame.setVisible(false);
                     tray.setLoggedIn();
