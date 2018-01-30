@@ -27,7 +27,11 @@ public class TrayApp {
     private MenuItem exit = new MenuItem("Exit");
     UserManager userManager = new UserManager();
 
-    final Messenger messenger = new Messenger(userManager, "http://localhost:8080/"); //TODO: make this string a constant
+    //http://localhost:8080/
+    private static final String REMOTE_SERVER = "https://thawing-atoll-11089.herokuapp.com/";
+    private static final String LOCAL_SERVER = "http://localhost:8080/";
+
+    final Messenger messenger = new Messenger(userManager);
 
     public TrayApp(){
         //https://docs.oracle.com/javase/tutorial/uiswing/misc/systemtray.html
@@ -86,9 +90,10 @@ public class TrayApp {
             }
         });
 
-        if(messenger.validateConnection()){
+        if(messenger.validateConnection(LOCAL_SERVER) || messenger.validateConnection(REMOTE_SERVER)){
             TrackStore store = new TrackStore(); //TODO: make invalidateStore(), a static function?
             messenger.loadDeviceId(store);
+            messenger.loadPlaylists();
             setLoggedIn();
         } else {
             setLoggedOut();

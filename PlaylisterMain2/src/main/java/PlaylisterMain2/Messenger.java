@@ -10,11 +10,14 @@ public class Messenger {
     private static NetHttpTransport httpTransport;
     private String apiUrl;
 
-    //returns true if user credentials are correct
-    public boolean validateConnection(){
+    //returns true if user credentials are correct, sets api url
+    public boolean validateConnection(String APIUrl){
+        apiUrl = APIUrl;
         Boolean res = sendGETRequest("api/me") != null;
         if(!res){
             System.out.println("Couldn't validate user");
+        } else {
+            System.out.println("Connected to API "+APIUrl+" successfully");
         }
         return res;
     }
@@ -39,8 +42,7 @@ public class Messenger {
         System.out.println("Finished sending tracks to server");
     }
 
-    public Messenger(IUserManager pUserManager, String pApiUrl){
-        apiUrl = pApiUrl;
+    public Messenger(IUserManager pUserManager){
         httpTransport = new NetHttpTransport();
         userManager = pUserManager;
     }
@@ -65,6 +67,17 @@ public class Messenger {
             }
         }
         return serverHasReset;
+    }
+
+    public void loadPlaylists(){
+        HttpResponse r = sendGETRequest("mplaylists/");
+        if(r != null) {
+            try {
+                System.out.println(r.parseAsString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void loadDeviceId(ATrackStore trackStore){
