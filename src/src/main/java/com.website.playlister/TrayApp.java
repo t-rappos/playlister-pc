@@ -2,7 +2,7 @@ package com.website.playlister;
 
 import PlaylisterMain2.Messenger;
 import PlaylisterMain2.Playlist;
-
+import PlaylisterMain2.TrackPath;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * Created by Thomas Rappos (6336361) on 12/18/2017.
  */
-public class TrayApp {
+class TrayApp {
     private final PopupMenu popup = new PopupMenu();
     private URL u2 = PlusSample.class.getResource("/bulb.gif");
     private Image image = Toolkit.getDefaultToolkit().getImage(u2);
@@ -26,13 +26,14 @@ public class TrayApp {
     private MenuItem settings = new MenuItem("Settings");
 
     private MenuItem scan = new MenuItem("Scan and Upload");
+    private MenuItem playlists = new MenuItem("Playlists");
     private MenuItem login = new MenuItem("Log In");
     private MenuItem logout = new MenuItem("Log Out");
     private MenuItem exit = new MenuItem("Exit");
-    UserManager userManager = new UserManager();
-    final Messenger messenger = new Messenger(userManager);
+    private UserManager userManager = new UserManager();
+    private final Messenger messenger = new Messenger(userManager);
 
-    public TrayApp(){
+    TrayApp(){
         //https://docs.oracle.com/javase/tutorial/uiswing/misc/systemtray.html
         System.out.println("using details stored for " + userManager.getUsername());
 
@@ -46,6 +47,21 @@ public class TrayApp {
         logout.addActionListener((ActionEvent e)->{
             userManager.saveCredentials("","");
             setLoggedOut();
+        });
+
+        playlists.addActionListener(e -> {
+            ArrayList<Playlist> pa = messenger.loadPlaylists();
+            ArrayList<String> names = new ArrayList<>();
+            ArrayList<Integer> ids = new ArrayList<>();
+            ArrayList<ArrayList<TrackPath>> trackPaths = new ArrayList<>();
+            for(Playlist p : pa){
+                if(p.name != null){
+                    names.add(p.name);
+                    ids.add((int)(long)p.id);
+                    trackPaths.add(messenger.loadTrackPathsForPlaylist(p.id));
+                }
+            }
+            PlaylistListDialog.CreateAndShowGui(names, ids, trackPaths);
         });
 
         login.addActionListener(new ActionListener() {
@@ -94,17 +110,7 @@ public class TrayApp {
         {
             TrackStore store = new TrackStore(); //TODO: make invalidateStore(), a static function?
             messenger.loadDeviceId(store);
-            ArrayList<Playlist> pa = messenger.loadPlaylists();
-            ArrayList<String> playlists = new ArrayList<>();
-            ArrayList<String> names = new ArrayList<>();
-            ArrayList<Integer> ids = new ArrayList<>();
-            for(Playlist p : pa){
-                if(p.name != null){
-                    names.add(p.name);
-                    ids.add((int)(long)p.id);
-                }
-            }
-            PlaylistListDialog.CreateAndShowGui(names, ids);
+
             setLoggedIn();
         } else {
             setLoggedOut();
@@ -118,9 +124,10 @@ public class TrayApp {
 
     }
 
-    public void setLoggedIn(){
+    void setLoggedIn(){
         popup.removeAll();
         popup.add(aboutItem);
+        popup.add(playlists);
         popup.add(settings);
         popup.addSeparator();
         popup.add(logout);
@@ -130,7 +137,7 @@ public class TrayApp {
         trayIcon.setPopupMenu(popup);
     }
 
-    public void setLoggedOut(){
+    void setLoggedOut(){
         popup.removeAll();
         popup.add(aboutItem);
         popup.add(settings);

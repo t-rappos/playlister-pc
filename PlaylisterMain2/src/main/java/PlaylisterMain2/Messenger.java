@@ -70,6 +70,18 @@ public class Messenger {
         return serverHasReset;
     }
 
+    public ArrayList<TrackPath> loadTrackPathsForPlaylist(long playlistId){
+        HttpResponse r = sendGETRequest("mtracks/" + Long.toString(playlistId));
+        if(r != null) {
+            try {
+                return MyJson.toTrackPathArray(r.parseAsString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     public ArrayList<Playlist> loadPlaylists(){
         HttpResponse r = sendGETRequest("mplaylists/");
         if(r != null) {

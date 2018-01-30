@@ -37,4 +37,10 @@ public class MyJson {
         return new Gson()
                 .fromJson( s , collectionType);
     }
+
+    public static ArrayList<TrackPath> toTrackPathArray(String s){
+        Type collectionType = new TypeToken<ArrayList<TrackPath>>(){}.getType();
+        return new Gson()
+                .fromJson( s , collectionType);
+    }
 }

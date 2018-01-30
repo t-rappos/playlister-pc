@@ -1,5 +1,7 @@
 package com.website.playlister;
 
+import PlaylisterMain2.TrackPath;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -17,17 +19,20 @@ public  class PlaylistListDialog
         extends JPanel
         implements ListSelectionListener {
 
-    private ArrayList<Integer> ids;
+//    private ArrayList<Integer> ids;
+    private ArrayList<String> names;
+    private ArrayList<ArrayList<TrackPath>> tracks;
     private JList<String> list;
-    private JButton copy;
-    private JButton makePlaylist;
+
     private static final String deleteString = "Delete from device";
     private static final String copyString = "Copy files to folder";
     private static final String makePlaylistString = "Export playlist as M3U";
 
-    private PlaylistListDialog(ArrayList<String> pnames, ArrayList<Integer> pids){
+    private PlaylistListDialog(ArrayList<String> pnames, ArrayList<Integer> pids, ArrayList<ArrayList<TrackPath>> ptracks){
         super(new BorderLayout());
-        ids = pids;
+        //ids = pids;
+        names = pnames;
+        tracks = ptracks;
 
         DefaultListModel<String> listModel = new DefaultListModel<>();
         for(String s : pnames){
@@ -38,7 +43,7 @@ public  class PlaylistListDialog
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setSelectedIndex(0);
         list.addListSelectionListener(this);
-        list.setVisibleRowCount(5);
+        list.setVisibleRowCount(10);
 
         JButton delete = new JButton(deleteString);
         delete.setActionCommand(deleteString);
@@ -67,19 +72,30 @@ public  class PlaylistListDialog
 
     class deleteListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            System.out.println(ids.get(list.getSelectedIndex()));
+            int index = list.getSelectedIndex();
+            TrackDialog.CreateAndShowGui(PlaylistInteraction.DELETE,
+                    tracks.get(index),
+                    names.get(index) );
         }
     }
 
     class makePlaylistListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            System.out.println(ids.get(list.getSelectedIndex()));
+            //System.out.println(ids.get(list.getSelectedIndex()));
+            int index = list.getSelectedIndex();
+            TrackDialog.CreateAndShowGui(PlaylistInteraction.MAKE_PLAYLIST,
+                    tracks.get(index),
+                    names.get(index));
         }
     }
 
     class copyListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            System.out.println(ids.get(list.getSelectedIndex()));
+            //System.out.println(ids.get(list.getSelectedIndex()));
+            int index = list.getSelectedIndex();
+            TrackDialog.CreateAndShowGui(PlaylistInteraction.COPY,
+                    tracks.get(index),
+                    names.get(index));
         }
     }
 
@@ -87,8 +103,11 @@ public  class PlaylistListDialog
     public void valueChanged(ListSelectionEvent e) {
     }
 
-    static void CreateAndShowGui(ArrayList<String> playlistNames, ArrayList<Integer> playlistIds){
-        JComponent newContentPane = new PlaylistListDialog(playlistNames, playlistIds);
+    static void CreateAndShowGui(ArrayList<String> playlistNames,
+                                 ArrayList<Integer> playlistIds,
+                                 ArrayList<ArrayList<TrackPath>> tracks)
+    {
+        JComponent newContentPane = new PlaylistListDialog(playlistNames, playlistIds, tracks);
         newContentPane.setOpaque(true); //content panes must be opaque
 
         JFrame frame = new JFrame("Playlists");
